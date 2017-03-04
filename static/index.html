@@ -1,0 +1,94 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Negotiator</title>
+  <meta name="description" content="Know your worth">
+  <meta name="author" content="Pavitra Bhalla">
+
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type='text/javascript'>
+    function addFields(){
+    	let number = document.getElementById("num_rounds").value;
+        // Container <div> where dynamic content will be placed
+        let container = document.getElementById("rounds");
+        // Clear previous contents of the container
+        while (container.hasChildNodes()) {
+            container.removeChild(container.lastChild);
+        }
+        for (i=0;i<number;i++){
+            // Append a node with a label
+            let textNode = document.createTextNode("Round " + (i+1));
+            container.appendChild(textNode);
+
+            // Create an <input> element, set its type and name attributes
+            let valuation = document.createElement("input");
+            valuation.type = "number";
+            valuation.name = "round_details[][valuation]";
+            valuation.min = "0";
+            valuation.placeholder = "Pre-money valuation";
+            container.appendChild(valuation);
+
+            let money_raised = document.createElement("input");
+            money_raised.type = "number";
+            money_raised.name = "round_details[][amount_raised]";
+            money_raised.placeholder = "Amount raised";
+            money_raised.min = "0";
+            container.appendChild(money_raised);
+
+            // Append a line break 
+            container.appendChild(document.createElement("br"));
+        }
+    }
+  </script>
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <div class="body">
+	  <h1> Want to know what your stock options are worth? </h1>
+	  <p>We'll help you understand vesting of your options and your % ownership of the company over time, so you can plan and negotiate better.
+	  	<br><br>
+	  	Every situation is unique, so lets get to know yours.
+	  </p>
+  </div>
+  <div class="form-style">
+	<form action="/graph" method="post">
+		<fieldset>
+			<legend><span class="number">1</span> Your grant</legend>
+			<input type="number" name="shares" min="0" placeholder="Number of shares *">
+			<input type="number" name="strike_price" min="0" step="0.01" placeholder="Strike Price *">
+      <label for="commencement">Vesting commencement date:</label>
+			<input type="date" name="commencement" placeholder="Vesting commencement date *">
+			<input type="number" name="vesting_cliff" min="0" placeholder="Vesting cliff (in months, typically 12) *">
+			<input type="number" name="vesting_period" min="0" placeholder="Total vesting period (in months, typically 48)">
+			<label for="vesting_schedule">Vesting schedule:</label>
+			<select id="vesting_schedule" name="vesting_schedule">
+			<optgroup>
+			  <option value="monthly">Monthly</option>
+			  <option value="quarterly">Quarterly</option>
+			</optgroup>
+			</select>      
+		</fieldset>
+		<fieldset>
+			<legend><span class="number">2</span> Your company</legend>
+			<input type="number" name="oustanding_shares" min="0" placeholder="Total outstanding shares at grant commencement *">
+			<input type="number" name="company_valuation" min="0" placeholder="Company valuation at grant commencement *">
+			<input type="number" id="num_rounds" name="num_rounds" min="0" onkeydown="addFields()" placeholder="Number of funding rounds since grant *">
+			<fieldset id="rounds">
+			</fieldset>
+      <label for="exit_date">Exit date (Optional):</label>
+			<input type="date" name="exit_date" placeholder="Exit date">
+			<input type="number" name="exit_valuation" min="0" placeholder="Exit valuation (Optional)">
+		</fieldset>
+		<input type="submit" value="Visualize">
+	</form>
+</div>
+</body>
+</html>
+
