@@ -36,7 +36,7 @@ func TestGenerate(t *testing.T) {
 			},
 		},
 		ExitDate: Date{
-			time.Now().AddDate(0, 40, 0),
+			time.Now().AddDate(0, 65, 0),
 		},
 		ExitValuation: 30000000000,
 		ExitAmount:    50000000000,

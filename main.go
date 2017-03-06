@@ -70,9 +70,9 @@ func Generate(grant *Grant) string {
 		exitDate = grant.ExitDate.UTC()
 
 		// If the exit date is after options have been fully vested,
-		// plot the graph until exit date
+		// plot the graph until next month after exit date
 		if lastDate.Before(exitDate) {
-			lastDate = exitDate
+			lastDate = exitDate.AddDate(0, 1, 0)
 		}
 
 		// Consider exit as a funding round for FD% calculation purpose
