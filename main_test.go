@@ -8,7 +8,7 @@ import (
 
 func TestGenerate(t *testing.T) {
 	grant := &Grant{
-		Shares:      100000,
+		Shares:      500000,
 		StrikePrice: 2,
 		Commencement: Date{
 			time.Now(),
@@ -35,6 +35,11 @@ func TestGenerate(t *testing.T) {
 				},
 			},
 		},
+		ExitDate: Date{
+			time.Now().AddDate(0, 40, 0),
+		},
+		ExitValuation: 30000000000,
+		ExitAmount:    50000000000,
 	}
 
 	graphURL := Generate(grant)

@@ -20,7 +20,7 @@ func main() {
 	http.ListenAndServe(":8000", nil)
 }
 
-// Grant: Struct to store form input values
+// Grant - Struct to store form input values
 type Grant struct {
 	Shares            int     `schema:"shares"`
 	StrikePrice       int     `schema:"strikePrice"`
@@ -33,7 +33,8 @@ type Grant struct {
 	NumRounds         int     `schema:"numRounds"`
 	RoundDetails      []Round `schema:"roundDetails"`
 	ExitDate          Date    `schema:"exitDate"`
-	ExitValuation     Date    `schema:"exitValuation"`
+	ExitValuation     int     `schema:"exitValuation"`
+	ExitAmount        int     `schema:"exitAmount"`
 }
 
 // Round - Struct to store funding round information
@@ -59,16 +60,28 @@ func (d *Date) UnmarshalText(text []byte) (err error) {
 func Generate(grant *Grant) string {
 	var outDates plotly.Array
 	var outValues plotly.Array
-	//var exitDate time.Time
+	var exitDate time.Time
 
 	thisDate := grant.Commencement.UTC()
 	cliffDate := thisDate.AddDate(0, grant.VestingCliff, 0)
 	lastDate := thisDate.AddDate(0, 48, 0)
 
-	// if grant.ExitDate.Time.IsZero() != true {
-	// 	exitDate = grant.ExitDate.UTC()
-	// 	lastDate = grant.ExitDate.UTC()
-	// }
+	if grant.ExitDate.Time.IsZero() != true {
+		exitDate = grant.ExitDate.UTC()
+
+		// If the exit date is after options have been fully vested,
+		// plot the graph until exit date
+		if lastDate.Before(exitDate) {
+			lastDate = exitDate
+		}
+
+		// Consider exit as a funding round for FD% calculation purpose
+		grant.RoundDetails = append(grant.RoundDetails, Round{
+			Valuation:    grant.ExitValuation,
+			AmountRaised: grant.ExitAmount,
+			FundingDate:  grant.ExitDate,
+		})
+	}
 
 	vestingInterval := 1 //month
 	dilution := float64(1)
@@ -79,18 +92,11 @@ func Generate(grant *Grant) string {
 
 	thisFDPercent := float64(0)
 	thisMonth := 0
-	doPlot := true
 
-	// if grant.ExitDate.Time.IsZero() != true {
-	// 	duration = grant.ExitDate.Time.Sub(grant.Commencement.Time)
-	// }
-
-	for doPlot == true {
+	for {
 		if thisDate.After(lastDate) {
 			break
 		}
-
-		outDates = append(outDates, thisDate)
 
 		if len(grant.RoundDetails) != 0 {
 			if thisDate.After(grant.RoundDetails[0].FundingDate.Time) {
@@ -104,10 +110,18 @@ func Generate(grant *Grant) string {
 		}
 
 		outValues = append(outValues, thisFDPercent)
+		outDates = append(outDates, thisDate)
+
 		thisDate = thisDate.AddDate(0, vestingInterval, 0)
-		thisMonth = thisMonth + vestingInterval
+
+		if thisMonth < 48 {
+			thisMonth = thisMonth + vestingInterval
+		} else {
+			thisMonth = 48
+		}
 	}
 
+	graphTitle := "Fully diluted percentage company ownership over time"
 	f := plotly.Figure{
 		Data: []plotly.Trace{
 			plotly.Trace{
@@ -116,9 +130,12 @@ func Generate(grant *Grant) string {
 				Y:    outValues,
 			},
 		},
+		Layout: plotly.Layout{
+			Title: &graphTitle,
+		},
 	}
 
-	result, err := f.Save("Negotiator")
+	result, err := f.Save("negotiator")
 	if err != nil {
 		fmt.Printf("Error happened %v", err)
 		return err.Error()
