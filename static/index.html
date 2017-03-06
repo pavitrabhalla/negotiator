@@ -12,7 +12,7 @@
 
   <script type='text/javascript'>
     function addFields(){
-    	let number = document.getElementById("num_rounds").value;
+    	let number = document.getElementById("numRounds").value;
         // Container <div> where dynamic content will be placed
         let container = document.getElementById("rounds");
         // Clear previous contents of the container
@@ -25,16 +25,22 @@
             container.appendChild(textNode);
 
             // Create an <input> element, set its type and name attributes
+            let fundingDate = document.createElement("input");
+            fundingDate.type = "date";
+            fundingDate.name = `roundDetails.${i}.fundingDate`;
+            fundingDate.placeholder = "Date of funding round";
+            container.appendChild(fundingDate);
+
             let valuation = document.createElement("input");
             valuation.type = "number";
-            valuation.name = "round_details[][valuation]";
+            valuation.name = `roundDetails.${i}.valuation`;
             valuation.min = "0";
             valuation.placeholder = "Pre-money valuation";
             container.appendChild(valuation);
 
             let money_raised = document.createElement("input");
             money_raised.type = "number";
-            money_raised.name = "round_details[][amount_raised]";
+            money_raised.name = `roundDetails.${i}.amountRaised`;
             money_raised.placeholder = "Amount raised";
             money_raised.min = "0";
             container.appendChild(money_raised);
@@ -62,13 +68,13 @@
 		<fieldset>
 			<legend><span class="number">1</span> Your grant</legend>
 			<input type="number" name="shares" min="0" placeholder="Number of shares *">
-			<input type="number" name="strike_price" min="0" step="0.01" placeholder="Strike Price *">
+			<input type="number" name="strikePrice" min="0" step="0.01" placeholder="Strike Price *">
       <label for="commencement">Vesting commencement date:</label>
 			<input type="date" name="commencement" placeholder="Vesting commencement date *">
-			<input type="number" name="vesting_cliff" min="0" placeholder="Vesting cliff (in months, typically 12) *">
-			<input type="number" name="vesting_period" min="0" placeholder="Total vesting period (in months, typically 48)">
-			<label for="vesting_schedule">Vesting schedule:</label>
-			<select id="vesting_schedule" name="vesting_schedule">
+			<input type="number" name="vestingCliff" min="0" placeholder="Vesting cliff (in months, typically 12) *">
+			<input type="number" name="vestingPeriod" min="0" placeholder="Total vesting period (in months, typically 48)">
+			<label for="vestingSchedule">Vesting schedule:</label>
+			<select id="vestingSchedule" name="vesting_schedule">
 			<optgroup>
 			  <option value="monthly">Monthly</option>
 			  <option value="quarterly">Quarterly</option>
@@ -77,14 +83,14 @@
 		</fieldset>
 		<fieldset>
 			<legend><span class="number">2</span> Your company</legend>
-			<input type="number" name="oustanding_shares" min="0" placeholder="Total outstanding shares at grant commencement *">
-			<input type="number" name="company_valuation" min="0" placeholder="Company valuation at grant commencement *">
-			<input type="number" id="num_rounds" name="num_rounds" min="0" onkeydown="addFields()" placeholder="Number of funding rounds since grant *">
+			<input type="number" name="outstandingShares" min="0" placeholder="Total outstanding shares at grant commencement *">
+			<input type="number" name="companyValuation" min="0" placeholder="Company valuation at grant commencement *">
+			<input type="number" id="numRounds" name="numRounds" min="0" onkeydown="addFields()" placeholder="Number of funding rounds since grant *">
 			<fieldset id="rounds">
 			</fieldset>
       <label for="exit_date">Exit date (Optional):</label>
-			<input type="date" name="exit_date" placeholder="Exit date">
-			<input type="number" name="exit_valuation" min="0" placeholder="Exit valuation (Optional)">
+			<input type="date" name="exitDate" placeholder="Exit date">
+			<input type="number" name="exitValuation" min="0" placeholder="Exit valuation (Optional)">
 		</fieldset>
 		<input type="submit" value="Visualize">
 	</form>
